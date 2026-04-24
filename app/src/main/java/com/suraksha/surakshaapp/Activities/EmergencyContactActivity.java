@@ -8,14 +8,16 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.google.android.material.textfield.TextInputLayout;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.PhoneAuthCredential;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.suraksha.surakshaapp.Models.TrustedContact;
 import com.suraksha.surakshaapp.R;
-import com.suraksha.surakshaapp.Utils.OTPManager;
+import com.suraksha.surakshaapp.Utils.FirebaseAuthManager;
 import com.suraksha.surakshaapp.Utils.SharedPrefManager;
 import com.suraksha.surakshaapp.Utils.ValidationUtils;
 
@@ -23,16 +25,15 @@ public class EmergencyContactActivity extends AppCompatActivity {
 
     private EditText etContactName, etContactEmail, etContactPhone;
     private TextInputLayout tilContactEmail, tilContactPhone;
-    private Button btnVerifyEmail, btnVerifyPhone, btnNext;
+    private Button btnVerifyPhone, btnNext;
     private TextView tvProgress;
 
     private FirebaseAuth mAuth;
     private FirebaseFirestore db;
     private SharedPrefManager prefManager;
-    private OTPManager otpManager;
+    private FirebaseAuthManager authManager;
 
     private int currentContactNumber = 1;
-    private boolean emailVerified = false;
     private boolean phoneVerified = false;
 
     @Override
@@ -45,7 +46,7 @@ public class EmergencyContactActivity extends AppCompatActivity {
         mAuth = FirebaseAuth.getInstance();
         db = FirebaseFirestore.getInstance();
         prefManager = new SharedPrefManager(this);
-        otpManager = new OTPManager();
+        authManager = new FirebaseAuthManager(this);
 
         setupListeners();
         updateProgress();
@@ -59,7 +60,6 @@ public class EmergencyContactActivity extends AppCompatActivity {
         tilContactEmail = findViewById(R.id.til_contact_email);
         tilContactPhone = findViewById(R.id.til_contact_phone);
 
-        btnVerifyEmail = findViewById(R.id.btn_verify_contact_email);
         btnVerifyPhone = findViewById(R.id.btn_verify_contact_phone);
         btnNext = findViewById(R.id.btn_next);
 
@@ -67,41 +67,28 @@ public class EmergencyContactActivity extends AppCompatActivity {
     }
 
     private void setupListeners() {
-        btnVerifyEmail.setOnClickListener(v -> handleContactEmailVerification());
         btnVerifyPhone.setOnClickListener(v -> handleContactPhoneVerification());
         btnNext.setOnClickListener(v -> handleNextContact());
+
+        android.text.TextWatcher watcher = new android.text.TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                updateButtonState();
+            }
+            @Override
+            public void afterTextChanged(android.text.Editable s) {}
+        };
+        etContactName.addTextChangedListener(watcher);
+        etContactEmail.addTextChangedListener(watcher);
     }
 
     private void updateProgress() {
         tvProgress.setText("Contact " + currentContactNumber + " of 4");
         btnNext.setText(currentContactNumber == 4 ? "Complete Registration" : "Next Contact");
-        emailVerified = false;
         phoneVerified = false;
         btnNext.setEnabled(false);
-    }
-
-    private void handleContactEmailVerification() {
-        String email = etContactEmail.getText().toString().trim();
-
-        if (TextUtils.isEmpty(email) || !ValidationUtils.isValidEmail(email)) {
-            Toast.makeText(this, "Please enter a valid email", Toast.LENGTH_SHORT).show();
-            return;
-        }
-
-        String code = otpManager.generateOTP();
-        Toast.makeText(this, "Verification code: " + code, Toast.LENGTH_LONG).show();
-        prefManager.setContactEmailVerificationCode(currentContactNumber, code);
-
-        new android.os.Handler(android.os.Looper.getMainLooper()).postDelayed(() -> {
-            emailVerified = true;
-            btnVerifyEmail.setText("✓ Email Verified");
-            btnVerifyEmail.setEnabled(false);
-            btnVerifyEmail.setTextColor(
-                    getResources().getColor(android.R.color.holo_green_dark)
-            );
-            updateButtonState();
-            Toast.makeText(this, "Contact email verified!", Toast.LENGTH_SHORT).show();
-        }, 2000);
     }
 
     private void handleContactPhoneVerification() {
@@ -112,27 +99,92 @@ public class EmergencyContactActivity extends AppCompatActivity {
             return;
         }
 
-        String otp = otpManager.generateOTP();
-        Toast.makeText(this, "OTP: " + otp, Toast.LENGTH_LONG).show();
-        prefManager.setContactPhoneOTP(currentContactNumber, otp);
+         btnVerifyPhone.setEnabled(false);
+        btnVerifyPhone.setText("Sending OTP...");
 
-        new android.os.Handler(android.os.Looper.getMainLooper()).postDelayed(() -> {
-            phoneVerified = true;
-            btnVerifyPhone.setText("✓ Phone Verified");
-            btnVerifyPhone.setEnabled(false);
-            btnVerifyPhone.setTextColor(
-                    getResources().getColor(android.R.color.holo_green_dark)
-            );
-            updateButtonState();
-            Toast.makeText(this, "Contact phone verified!", Toast.LENGTH_SHORT).show();
-        }, 2000);
+        authManager.sendOtp(phone, new FirebaseAuthManager.PhoneAuthCallback() {
+            @Override
+            public void onCodeSent(String verificationId) {
+                Toast.makeText(EmergencyContactActivity.this, "OTP sent to " + phone, Toast.LENGTH_SHORT).show();
+                showOTPInputDialog();
+            }
+
+            @Override
+            public void onVerificationCompleted(PhoneAuthCredential credential) {
+                markPhoneVerified();
+            }
+
+            @Override
+            public void onFailure(String error) {
+                btnVerifyPhone.setEnabled(true);
+                btnVerifyPhone.setText("Verify Phone");
+                Toast.makeText(EmergencyContactActivity.this, "Error: " + error, Toast.LENGTH_LONG).show();
+            }
+        });
+    }
+
+    private void showOTPInputDialog() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle("Verify Contact Phone");
+        builder.setMessage("Enter the OTP sent to the contact's phone number");
+
+        final EditText input = new EditText(this);
+        input.setInputType(android.text.InputType.TYPE_CLASS_NUMBER);
+        builder.setView(input);
+
+        builder.setPositiveButton("Verify", (dialog, which) -> {
+            String code = input.getText().toString().trim();
+            if (!code.isEmpty()) {
+                verifyCode(code);
+            } else {
+                Toast.makeText(this, "Enter OTP", Toast.LENGTH_SHORT).show();
+                btnVerifyPhone.setEnabled(true);
+                btnVerifyPhone.setText("Verify Phone");
+            }
+        });
+        builder.setNegativeButton("Cancel", (dialog, which) -> {
+            dialog.cancel();
+            btnVerifyPhone.setEnabled(true);
+            btnVerifyPhone.setText("Verify Phone");
+        });
+
+        builder.show();
+    }
+
+    private void verifyCode(String code) {
+        authManager.verifyOtp(code, new FirebaseAuthManager.PhoneAuthCallback() {
+            @Override
+            public void onCodeSent(String verificationId) {}
+
+            @Override
+            public void onVerificationCompleted(PhoneAuthCredential credential) {
+                markPhoneVerified();
+            }
+
+            @Override
+            public void onFailure(String error) {
+                btnVerifyPhone.setEnabled(true);
+                btnVerifyPhone.setText("Verify Phone");
+                Toast.makeText(EmergencyContactActivity.this, "Verification failed: " + error, Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+
+    private void markPhoneVerified() {
+        phoneVerified = true;
+        btnVerifyPhone.setText("✓ Phone Verified");
+        btnVerifyPhone.setEnabled(false);
+        btnVerifyPhone.setTextColor(getResources().getColor(android.R.color.holo_green_dark));
+        Toast.makeText(this, "Contact phone verified!", Toast.LENGTH_SHORT).show();
+        updateButtonState();
     }
 
     private void updateButtonState() {
+        String email = etContactEmail.getText().toString().trim();
         btnNext.setEnabled(
-                emailVerified &&
-                        phoneVerified &&
-                        !etContactName.getText().toString().trim().isEmpty()
+                phoneVerified &&
+                        !etContactName.getText().toString().trim().isEmpty() &&
+                        ValidationUtils.isValidEmail(email)
         );
     }
 
@@ -153,8 +205,8 @@ public class EmergencyContactActivity extends AppCompatActivity {
                 contactName,
                 contactEmail,
                 contactPhone,
-                true,
-                true
+                true, // verified_phone
+                true  // verified_email (auto-verified)
         );
 
         db.collection("users")
@@ -191,21 +243,12 @@ public class EmergencyContactActivity extends AppCompatActivity {
         etContactEmail.setText("");
         etContactPhone.setText("");
 
-        btnVerifyEmail.setText("Verify Email");
         btnVerifyPhone.setText("Verify Phone");
-
-        btnVerifyEmail.setEnabled(true);
         btnVerifyPhone.setEnabled(true);
-
-        // Reset colors to default (white; adjust if your theme uses another)
-        btnVerifyEmail.setTextColor(
-                getResources().getColor(android.R.color.white)
-        );
         btnVerifyPhone.setTextColor(
                 getResources().getColor(android.R.color.white)
         );
 
-        emailVerified = false;
         phoneVerified = false;
         btnNext.setEnabled(false);
     }

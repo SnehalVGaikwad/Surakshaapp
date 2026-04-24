@@ -155,17 +155,6 @@
             android:textColor="@color/text_secondary"
             android:layout_marginBottom="16dp" />
 
-        <!-- Verify Email Button -->
-        <Button
-            android:id="@+id/btn_verify_email"
-            android:layout_width="match_parent"
-            android:layout_height="48dp"
-            android:text="Verify Email"
-            android:textSize="14sp"
-            android:layout_marginBottom="12dp"
-            android:background="@drawable/rounded_btn_bg"
-            android:textColor="@color/white" />
-
         <!-- Verify Phone (OTP) Button -->
         <Button
             android:id="@+id/btn_verify_otp"

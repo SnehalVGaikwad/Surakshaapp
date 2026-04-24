@@ -7,16 +7,16 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.google.android.material.textfield.TextInputLayout;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.PhoneAuthCredential;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.suraksha.surakshaapp.Models.UserProfile;
 import com.suraksha.surakshaapp.R;
-import com.suraksha.surakshaapp.Utils.EmailManager;
 import com.suraksha.surakshaapp.Utils.FirebaseAuthManager;
-import com.suraksha.surakshaapp.Utils.OTPManager;
 import com.suraksha.surakshaapp.Utils.SharedPrefManager;
 import com.suraksha.surakshaapp.Utils.ValidationUtils;
 
@@ -24,17 +24,13 @@ public class RegistrationActivity extends AppCompatActivity {
 
     private EditText etName, etEmail, etPhone, etPassword;
     private TextInputLayout tilEmail, tilPhone, tilPassword;
-    private Button btnVerifyEmail, btnVerifyOTP, btnRegister;
+    private Button btnVerifyOTP, btnRegister;
     private FirebaseAuth mAuth;
     private FirebaseFirestore db;
     private FirebaseAuthManager authManager;
-    private OTPManager otpManager;
-    private EmailManager emailManager;
     private SharedPrefManager prefManager;
 
-    private boolean emailVerified = false;
     private boolean phoneVerified = false;
-    private String generatedOTP = "";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -45,8 +41,6 @@ public class RegistrationActivity extends AppCompatActivity {
         mAuth = FirebaseAuth.getInstance();
         db = FirebaseFirestore.getInstance();
         authManager = new FirebaseAuthManager(this);
-        otpManager = new OTPManager();
-        emailManager = new EmailManager(this);
         prefManager = new SharedPrefManager(this);
 
         setupListeners();
@@ -60,13 +54,11 @@ public class RegistrationActivity extends AppCompatActivity {
         tilEmail = findViewById(R.id.til_email);
         tilPhone = findViewById(R.id.til_phone);
         tilPassword = findViewById(R.id.til_password);
-        btnVerifyEmail = findViewById(R.id.btn_verify_email);
         btnVerifyOTP = findViewById(R.id.btn_verify_otp);
         btnRegister = findViewById(R.id.btn_register);
     }
 
     private void setupListeners() {
-        btnVerifyEmail.setOnClickListener(v -> handleEmailVerification());
         btnVerifyOTP.setOnClickListener(v -> handleOTPVerification());
         btnRegister.setOnClickListener(v -> handleRegistration());
 
@@ -77,45 +69,25 @@ public class RegistrationActivity extends AppCompatActivity {
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
                 updatePasswordValidation(s.toString());
+                updateRegisterButton();
             }
 
             @Override
             public void afterTextChanged(android.text.Editable s) {}
         });
-    }
 
-    private void handleEmailVerification() {
-        String email = etEmail.getText().toString().trim();
-
-        if (TextUtils.isEmpty(email) || !ValidationUtils.isValidEmail(email)) {
-            Toast.makeText(this, "Please enter a valid email", Toast.LENGTH_SHORT).show();
-            return;
-        }
-
-        // Generate and show verification code (mock for demo)
-        String verificationCode = otpManager.generateOTP();
-        Toast.makeText(this, "Verification code: " + verificationCode, Toast.LENGTH_LONG).show();
-
-        // Store for comparison
-        prefManager.setEmailVerificationCode(verificationCode);
-
-        // Show input for code
-        showEmailCodeInput();
-    }
-
-    private void showEmailCodeInput() {
-        // In production, you'd show a dialog for user to input verification code
-        // For now, we auto-verify after 2 seconds for demo
-        new android.os.Handler(android.os.Looper.getMainLooper()).postDelayed(() -> {
-            emailVerified = true;
-            btnVerifyEmail.setText("✓ Email Verified");
-            btnVerifyEmail.setEnabled(false);
-            btnVerifyEmail.setTextColor(
-                    getResources().getColor(android.R.color.holo_green_dark)
-            );
-            Toast.makeText(this, "Email verified successfully!", Toast.LENGTH_SHORT).show();
-            updateRegisterButton();
-        }, 2000);
+        android.text.TextWatcher watcher = new android.text.TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                updateRegisterButton();
+            }
+            @Override
+            public void afterTextChanged(android.text.Editable s) {}
+        };
+        etName.addTextChangedListener(watcher);
+        etEmail.addTextChangedListener(watcher);
     }
 
     private void handleOTPVerification() {
@@ -126,29 +98,83 @@ public class RegistrationActivity extends AppCompatActivity {
             return;
         }
 
-        // Generate OTP
-        generatedOTP = otpManager.generateOTP();
-        Toast.makeText(this, "OTP: " + generatedOTP, Toast.LENGTH_LONG).show();
+        btnVerifyOTP.setEnabled(false);
+        btnVerifyOTP.setText("Sending OTP...");
 
-        prefManager.setPhoneOTP(generatedOTP);
+        authManager.sendOtp(phone, new FirebaseAuthManager.PhoneAuthCallback() {
+            @Override
+            public void onCodeSent(String verificationId) {
+                Toast.makeText(RegistrationActivity.this, "OTP sent to " + phone, Toast.LENGTH_SHORT).show();
+                showOTPInputDialog();
+            }
 
-        // Show input for OTP
-        showOTPInput();
+            @Override
+            public void onVerificationCompleted(PhoneAuthCredential credential) {
+                markPhoneVerified();
+            }
+
+            @Override
+            public void onFailure(String error) {
+                btnVerifyOTP.setEnabled(true);
+                btnVerifyOTP.setText("Verify Phone (OTP)");
+                Toast.makeText(RegistrationActivity.this, "Error: " + error, Toast.LENGTH_LONG).show();
+            }
+        });
     }
 
-    private void showOTPInput() {
-        // In production, show dialog for OTP input
-        // For demo, auto-verify after 2 seconds
-        new android.os.Handler(android.os.Looper.getMainLooper()).postDelayed(() -> {
-            phoneVerified = true;
-            btnVerifyOTP.setText("✓ Phone Verified");
-            btnVerifyOTP.setEnabled(false);
-            btnVerifyOTP.setTextColor(
-                    getResources().getColor(android.R.color.holo_green_dark)
-            );
-            Toast.makeText(this, "Phone verified successfully!", Toast.LENGTH_SHORT).show();
-            updateRegisterButton();
-        }, 2000);
+    private void showOTPInputDialog() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle("Enter OTP");
+
+        final EditText input = new EditText(this);
+        input.setInputType(android.text.InputType.TYPE_CLASS_NUMBER);
+        builder.setView(input);
+
+        builder.setPositiveButton("Verify", (dialog, which) -> {
+            String code = input.getText().toString().trim();
+            if (!code.isEmpty()) {
+                verifyCode(code);
+            } else {
+                Toast.makeText(this, "Enter OTP", Toast.LENGTH_SHORT).show();
+                btnVerifyOTP.setEnabled(true);
+                btnVerifyOTP.setText("Verify Phone (OTP)");
+            }
+        });
+        builder.setNegativeButton("Cancel", (dialog, which) -> {
+            dialog.cancel();
+            btnVerifyOTP.setEnabled(true);
+            btnVerifyOTP.setText("Verify Phone (OTP)");
+        });
+
+        builder.show();
+    }
+
+    private void verifyCode(String code) {
+        authManager.verifyOtp(code, new FirebaseAuthManager.PhoneAuthCallback() {
+            @Override
+            public void onCodeSent(String verificationId) {}
+
+            @Override
+            public void onVerificationCompleted(PhoneAuthCredential credential) {
+                markPhoneVerified();
+            }
+
+            @Override
+            public void onFailure(String error) {
+                btnVerifyOTP.setEnabled(true);
+                btnVerifyOTP.setText("Verify Phone (OTP)");
+                Toast.makeText(RegistrationActivity.this, "Verification failed: " + error, Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+
+    private void markPhoneVerified() {
+        phoneVerified = true;
+        btnVerifyOTP.setText("✓ Phone Verified");
+        btnVerifyOTP.setEnabled(false);
+        btnVerifyOTP.setTextColor(getResources().getColor(android.R.color.holo_green_dark));
+        Toast.makeText(this, "Phone verified successfully!", Toast.LENGTH_SHORT).show();
+        updateRegisterButton();
     }
 
     private void updatePasswordValidation(String password) {
@@ -161,9 +187,15 @@ public class RegistrationActivity extends AppCompatActivity {
     }
 
     private void updateRegisterButton() {
+        String name = etName.getText().toString().trim();
+        String password = etPassword.getText().toString().trim();
+        String email = etEmail.getText().toString().trim();
+
         btnRegister.setEnabled(
-                emailVerified && phoneVerified && !etName.getText().toString().isEmpty()
-                        && ValidationUtils.isStrongPassword(etPassword.getText().toString())
+                phoneVerified && 
+                !name.isEmpty() && 
+                ValidationUtils.isValidEmail(email) &&
+                ValidationUtils.isStrongPassword(password)
         );
     }
 
@@ -173,28 +205,25 @@ public class RegistrationActivity extends AppCompatActivity {
         String phone = etPhone.getText().toString().trim();
         String password = etPassword.getText().toString().trim();
 
-        if (!emailVerified || !phoneVerified) {
-            Toast.makeText(this, "Please complete all verifications", Toast.LENGTH_SHORT).show();
+        if (!phoneVerified) {
+            Toast.makeText(this, "Please verify your phone number", Toast.LENGTH_SHORT).show();
             return;
         }
 
         btnRegister.setEnabled(false);
         Toast.makeText(this, "Registering...", Toast.LENGTH_SHORT).show();
 
-        // Create user with Firebase Auth
         mAuth.createUserWithEmailAndPassword(email, password)
                 .addOnCompleteListener(task -> {
                     if (task.isSuccessful()) {
-                        // Send email verification
-                        mAuth.getCurrentUser().sendEmailVerification();
-
-                        // Save user profile to Firestore
                         UserProfile userProfile = new UserProfile(name, email, phone);
                         db.collection("users").document(mAuth.getCurrentUser().getUid())
                                 .set(userProfile)
                                 .addOnSuccessListener(aVoid -> {
                                     prefManager.setRegistrationComplete(true);
-                                    Toast.makeText(this, "Registration successful! Check email to verify.", Toast.LENGTH_SHORT).show();
+                                    prefManager.setUserName(name);
+                                    prefManager.setUserPhone(phone);
+                                    Toast.makeText(this, "Registration successful!", Toast.LENGTH_SHORT).show();
                                     startActivity(new Intent(RegistrationActivity.this, EmergencyContactActivity.class));
                                     finish();
                                 })

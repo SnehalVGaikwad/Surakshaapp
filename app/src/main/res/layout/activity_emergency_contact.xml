@@ -105,7 +105,7 @@
             style="@style/Widget.MaterialComponents.TextInputLayout.FilledBox.Dense"
             android:layout_width="match_parent"
             android:layout_height="56dp"
-            android:layout_marginBottom="16dp"
+            android:layout_marginBottom="32dp"
             app:boxCornerRadiusBottomEnd="20dp"
             app:boxCornerRadiusBottomStart="20dp"
             app:boxCornerRadiusTopEnd="20dp"
@@ -123,17 +123,6 @@
                 android:textColor="@color/white"
                 android:gravity="center_vertical" />
         </com.google.android.material.textfield.TextInputLayout>
-
-        <!-- Verify Email Button -->
-        <Button
-            android:id="@+id/btn_verify_contact_email"
-            android:layout_width="match_parent"
-            android:layout_height="48dp"
-            android:text="Verify Email"
-            android:textSize="14sp"
-            android:layout_marginBottom="32dp"
-            android:background="@drawable/rounded_btn_bg"
-            android:textColor="@color/white" />
 
         <!-- Next Button -->
         <Button
