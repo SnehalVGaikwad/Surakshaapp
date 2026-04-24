@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/bg_suraksha"
+    android:orientation="vertical"
+    android:gravity="center"
+    android:padding="24dp">
+
+    <!-- Success Icon / Message -->
+    <ImageView
+        android:layout_width="120dp"
+        android:layout_height="120dp"
+        android:src="@drawable/suraksha_logo"
+        android:contentDescription="Success"
+        android:layout_marginBottom="32dp" />
+
+    <!-- Success Title -->
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Registration Complete!"
+        android:textSize="28sp"
+        android:textStyle="bold"
+        android:textColor="@color/accent_pink_dark"
+        android:gravity="center"
+        android:layout_marginBottom="16dp" />
+
+    <!-- Success Message -->
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="All 4 emergency contacts have been added successfully.\n\nYour app is ready for emergency alerts."
+        android:textSize="14sp"
+        android:textColor="@color/text_secondary"
+        android:gravity="center"
+        android:layout_marginBottom="48dp" />
+
+    <!-- Proceed Button -->
+    <Button
+        android:id="@+id/btn_proceed_to_home"
+        android:layout_width="match_parent"
+        android:layout_height="56dp"
+        android:text="Grant Permissions and Go Home"
+        android:textSize="16sp"
+        android:textStyle="bold"
+        android:textColor="@color/white"
+        android:background="@drawable/rounded_btn_bg" />
+
+</LinearLayout>

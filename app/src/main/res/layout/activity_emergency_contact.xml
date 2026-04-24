@@ -1,0 +1,152 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/bg_suraksha"
+    android:fillViewport="true">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:paddingStart="24dp"
+        android:paddingEnd="24dp"
+        android:paddingTop="40dp"
+        android:paddingBottom="40dp">
+
+        <!-- Progress Indicator -->
+        <TextView
+            android:id="@+id/tv_progress"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Contact 1 of 4"
+            android:textSize="13sp"
+            android:textColor="@color/text_secondary"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginBottom="12dp" />
+
+        <!-- Title -->
+        <TextView
+            android:id="@+id/emergency_title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/emergency_title"
+            android:textSize="24sp"
+            android:textStyle="bold"
+            android:textColor="@color/accent_pink_dark"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginBottom="32dp" />
+
+        <!-- Contact Name -->
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/til_contact_name"
+            style="@style/Widget.MaterialComponents.TextInputLayout.FilledBox.Dense"
+            android:layout_width="match_parent"
+            android:layout_height="56dp"
+            android:layout_marginBottom="16dp"
+            app:boxCornerRadiusBottomEnd="20dp"
+            app:boxCornerRadiusBottomStart="20dp"
+            app:boxCornerRadiusTopEnd="20dp"
+            app:boxCornerRadiusTopStart="20dp"
+            app:boxStrokeColor="@color/accent_pink"
+            app:boxStrokeWidth="2dp">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/et_contact_name"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:hint="@string/hint_contact_name"
+                android:inputType="textPersonName"
+                android:textSize="15sp"
+                android:textColor="@color/white"
+                android:gravity="center_vertical" />
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <!-- Contact Phone -->
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/til_contact_phone"
+            style="@style/Widget.MaterialComponents.TextInputLayout.FilledBox.Dense"
+            android:layout_width="match_parent"
+            android:layout_height="56dp"
+            android:layout_marginBottom="16dp"
+            app:boxCornerRadiusBottomEnd="20dp"
+            app:boxCornerRadiusBottomStart="20dp"
+            app:boxCornerRadiusTopEnd="20dp"
+            app:boxCornerRadiusTopStart="20dp"
+            app:boxStrokeColor="@color/accent_pink"
+            app:boxStrokeWidth="2dp">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/et_contact_phone"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:hint="@string/hint_contact_phone"
+                android:inputType="phone"
+                android:textSize="15sp"
+                android:textColor="@color/white"
+                android:gravity="center_vertical" />
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <!-- Verify Phone Button -->
+        <Button
+            android:id="@+id/btn_verify_contact_phone"
+            android:layout_width="match_parent"
+            android:layout_height="48dp"
+            android:text="Verify Phone"
+            android:textSize="14sp"
+            android:layout_marginBottom="16dp"
+            android:background="@drawable/rounded_btn_bg"
+            android:textColor="@color/white" />
+
+        <!-- Contact Email -->
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/til_contact_email"
+            style="@style/Widget.MaterialComponents.TextInputLayout.FilledBox.Dense"
+            android:layout_width="match_parent"
+            android:layout_height="56dp"
+            android:layout_marginBottom="16dp"
+            app:boxCornerRadiusBottomEnd="20dp"
+            app:boxCornerRadiusBottomStart="20dp"
+            app:boxCornerRadiusTopEnd="20dp"
+            app:boxCornerRadiusTopStart="20dp"
+            app:boxStrokeColor="@color/accent_pink"
+            app:boxStrokeWidth="2dp">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/et_contact_email"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:hint="@string/hint_contact_email"
+                android:inputType="textEmailAddress"
+                android:textSize="15sp"
+                android:textColor="@color/white"
+                android:gravity="center_vertical" />
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <!-- Verify Email Button -->
+        <Button
+            android:id="@+id/btn_verify_contact_email"
+            android:layout_width="match_parent"
+            android:layout_height="48dp"
+            android:text="Verify Email"
+            android:textSize="14sp"
+            android:layout_marginBottom="32dp"
+            android:background="@drawable/rounded_btn_bg"
+            android:textColor="@color/white" />
+
+        <!-- Next Button -->
+        <Button
+            android:id="@+id/btn_next"
+            android:layout_width="match_parent"
+            android:layout_height="56dp"
+            android:text="@string/btn_next"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            android:textColor="@color/white"
+            android:background="@drawable/rounded_btn_bg"
+            android:enabled="false" />
+
+    </LinearLayout>
+
+</ScrollView>

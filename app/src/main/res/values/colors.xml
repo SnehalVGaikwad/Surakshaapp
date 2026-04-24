@@ -1,0 +1,10 @@
+<resources>
+    <color name="white">#FFFFFF</color>
+    <color name="black">#000000</color>
+    <color name="accent_pink">#FF79B4</color>
+    <color name="accent_pink_dark">#E65C9A</color>
+    <color name="pastel_pink">#FFD9E3</color>
+    <color name="red">#FF0000</color>
+    <color name="text_secondary">#999999</color>
+    <color name="holo_green_dark">#FF669900</color>
+</resources>

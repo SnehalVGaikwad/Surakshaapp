@@ -1,0 +1,20 @@
+<resources>
+    <string name="app_name">Suraksha</string>
+    <string name="label_suraksha">SURAKSHA</string>
+
+    <!-- Registration -->
+    <string name="hint_name">Full Name</string>
+    <string name="hint_email">Email Address</string>
+    <string name="hint_phone">Phone Number</string>
+    <string name="btn_register">REGISTER</string>
+
+    <!-- Emergency Contacts -->
+    <string name="emergency_title">Register Emergency Contact</string>
+    <string name="hint_contact_name">Contact Name</string>
+    <string name="hint_contact_phone">Contact Phone</string>
+    <string name="hint_contact_email">Contact Email</string>
+    <string name="btn_next">Next</string>
+    <string name="registration_title">SURAKSHA</string>
+    <string name="password">password\n</string>
+    <string name="login_title">SURAKSHA\n</string>
+</resources>

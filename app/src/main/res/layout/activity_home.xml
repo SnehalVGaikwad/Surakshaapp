@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:gravity="center_horizontal"
+    android:padding="24dp"
+    android:background="#FFF9FB">
+
+    <!-- Title -->
+    <TextView
+        android:id="@+id/tv_home_title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="SOS button"
+        android:textSize="22sp"
+        android:textStyle="bold"
+        android:textColor="@color/black"
+        android:layout_marginTop="24dp"
+        android:layout_marginBottom="32dp" />
+
+    <!-- Big SOS red circle -->
+    <FrameLayout
+        android:layout_width="220dp"
+        android:layout_height="220dp"
+        android:layout_marginBottom="24dp"
+        android:background="@drawable/bg_sos_circle">
+
+        <TextView
+            android:id="@+id/btn_sos"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:gravity="center"
+            android:text="SOS"
+            android:textSize="36sp"
+            android:textStyle="bold"
+            android:textColor="@android:color/white" />
+    </FrameLayout>
+
+    <!-- Short description -->
+    <TextView
+        android:id="@+id/tv_sos_subtitle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="SOS button will immediately send a distress signal to your trusted contacts."
+        android:textSize="14sp"
+        android:textColor="@color/text_secondary"
+        android:gravity="center"
+        android:layout_marginStart="16dp"
+        android:layout_marginEnd="16dp"
+        android:layout_marginBottom="32dp" />
+
+    <!-- 100 Call Police -->
+    <Button
+        android:id="@+id/btn_call_police"
+        android:layout_width="match_parent"
+        android:layout_height="56dp"
+        android:text="100 – Call Police"
+        android:textAllCaps="false"
+        android:textSize="16sp"
+        android:textStyle="bold"
+        android:textColor="@android:color/white"
+        android:background="@drawable/bg_emergency_button"
+        android:layout_marginBottom="16dp" />
+
+    <!-- 102 Call Ambulance -->
+    <Button
+        android:id="@+id/btn_call_ambulance"
+        android:layout_width="match_parent"
+        android:layout_height="56dp"
+        android:text="102 – Call Ambulance"
+        android:textAllCaps="false"
+        android:textSize="16sp"
+        android:textStyle="bold"
+        android:textColor="@android:color/white"
+        android:background="@drawable/bg_emergency_button" />
+
+</LinearLayout>
