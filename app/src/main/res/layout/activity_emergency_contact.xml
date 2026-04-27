@@ -63,6 +63,31 @@
                 android:gravity="center_vertical" />
         </com.google.android.material.textfield.TextInputLayout>
 
+        <!-- Contact Email -->
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/til_contact_email"
+            style="@style/Widget.MaterialComponents.TextInputLayout.FilledBox.Dense"
+            android:layout_width="match_parent"
+            android:layout_height="56dp"
+            android:layout_marginBottom="32dp"
+            app:boxCornerRadiusBottomEnd="20dp"
+            app:boxCornerRadiusBottomStart="20dp"
+            app:boxCornerRadiusTopEnd="20dp"
+            app:boxCornerRadiusTopStart="20dp"
+            app:boxStrokeColor="@color/accent_pink"
+            app:boxStrokeWidth="2dp">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/et_contact_email"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:hint="@string/hint_contact_email"
+                android:inputType="textEmailAddress"
+                android:textSize="15sp"
+                android:textColor="@color/white"
+                android:gravity="center_vertical" />
+        </com.google.android.material.textfield.TextInputLayout>
+
         <!-- Contact Phone -->
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/til_contact_phone"
@@ -98,31 +123,6 @@
             android:layout_marginBottom="16dp"
             android:background="@drawable/rounded_btn_bg"
             android:textColor="@color/white" />
-
-        <!-- Contact Email -->
-        <com.google.android.material.textfield.TextInputLayout
-            android:id="@+id/til_contact_email"
-            style="@style/Widget.MaterialComponents.TextInputLayout.FilledBox.Dense"
-            android:layout_width="match_parent"
-            android:layout_height="56dp"
-            android:layout_marginBottom="32dp"
-            app:boxCornerRadiusBottomEnd="20dp"
-            app:boxCornerRadiusBottomStart="20dp"
-            app:boxCornerRadiusTopEnd="20dp"
-            app:boxCornerRadiusTopStart="20dp"
-            app:boxStrokeColor="@color/accent_pink"
-            app:boxStrokeWidth="2dp">
-
-            <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/et_contact_email"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:hint="@string/hint_contact_email"
-                android:inputType="textEmailAddress"
-                android:textSize="15sp"
-                android:textColor="@color/white"
-                android:gravity="center_vertical" />
-        </com.google.android.material.textfield.TextInputLayout>
 
         <!-- Next Button -->
         <Button

@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/bg_suraksha"
+    android:fillViewport="true">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="24dp"
+        android:gravity="center_horizontal">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Create Backup PIN"
+            android:textSize="26sp"
+            android:textStyle="bold"
+            android:textColor="@color/accent_pink_dark"
+            android:layout_marginTop="40dp"
+            android:layout_marginBottom="12dp"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Set a secure 4-digit backup PIN for emergency override."
+            android:textSize="14sp"
+            android:textColor="@color/text_secondary"
+            android:gravity="center"
+            android:layout_marginBottom="32dp"/>
+
+        <EditText
+            android:id="@+id/et_backup_pin"
+            android:layout_width="match_parent"
+            android:layout_height="56dp"
+            android:hint="Enter 4-digit PIN"
+            android:inputType="numberPassword"
+            android:maxLength="4"
+            android:background="@drawable/rounded_edittext_bg"
+            android:padding="16dp"
+            android:textColor="@color/white"
+            android:layout_marginBottom="16dp"/>
+
+        <EditText
+            android:id="@+id/et_confirm_backup_pin"
+            android:layout_width="match_parent"
+            android:layout_height="56dp"
+            android:hint="Confirm PIN"
+            android:inputType="numberPassword"
+            android:maxLength="4"
+            android:background="@drawable/rounded_edittext_bg"
+            android:padding="16dp"
+            android:textColor="@color/white"
+            android:layout_marginBottom="32dp"/>
+
+        <Button
+            android:id="@+id/btn_save_pin"
+            android:layout_width="match_parent"
+            android:layout_height="56dp"
+            android:text="Save Backup PIN"
+            android:textStyle="bold"
+            android:textColor="@color/white"
+            android:background="@drawable/rounded_btn_bg"/>
+
+    </LinearLayout>
+
+</ScrollView>

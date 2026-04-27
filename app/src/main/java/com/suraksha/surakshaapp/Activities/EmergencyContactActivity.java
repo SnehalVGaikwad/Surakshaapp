@@ -223,7 +223,7 @@ public class EmergencyContactActivity extends AppCompatActivity {
                         prefManager.setAllContactsAdded(true);
                         startActivity(new Intent(
                                 EmergencyContactActivity.this,
-                                SuccessActivity.class));
+                                BackupPinActivity.class));
                         finish();
                     } else {
                         currentContactNumber++;

@@ -18,6 +18,7 @@
     <!-- Notifications (Android 13+) -->
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
     <uses-feature android:name="android.hardware.telephony" android:required="false"/>
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE"/>
 
     <application
         android:allowBackup="true"
@@ -67,9 +68,18 @@
             android:name=".Activities.PermissionBlockedActivity"
             android:exported="false" />
 
+        <activity android:name=".Activities.BackupPinActivity" />
+
         <!-- Main Activity (deprecated, but kept) -->
         <activity
             android:name=".Activities.MainActivity"
+            android:exported="false" />
+
+        <activity android:name=".Activities.SafetyCheckActivity" />
+        <activity android:name=".Activities.FinalAlertActivity" />
+        <!-- notification countdown-->
+        <service
+            android:name=".Activities.TimerService"
             android:exported="false" />
 
     </application>
