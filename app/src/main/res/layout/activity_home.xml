@@ -43,7 +43,7 @@
         android:id="@+id/tv_sos_subtitle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="SOS button will immediately send a distress signal to your trusted contacts."
+        android:text="SOS button will send emergency alert to your emergency contact after the countdown ends."
         android:textSize="14sp"
         android:textColor="@color/text_secondary"
         android:gravity="center"

@@ -36,7 +36,7 @@ public class HomeActivity extends AppCompatActivity {
     private CountDownTimer countDownTimer;
 
     // TEMP TEST MODE = 30 sec
-    private final long START_TIME = 30000;
+    private final long START_TIME = 300000;
 
     private String savedBackupPin = "";
 

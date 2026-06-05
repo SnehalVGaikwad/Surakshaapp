@@ -24,7 +24,7 @@
         android:text="10"
         android:textSize="64sp"
         android:textStyle="bold"
-        android:textColor="@color/white"
+        android:textColor="@color/black"
         android:layout_marginBottom="32dp"/>
 
     <Button

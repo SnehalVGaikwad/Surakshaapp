@@ -8,7 +8,7 @@ import android.widget.EditText;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
-
+import com.suraksha.surakshaapp.Utils.SharedPrefManager;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.SetOptions;
@@ -24,6 +24,7 @@ public class BackupPinActivity extends AppCompatActivity {
 
     private FirebaseAuth mAuth;
     private FirebaseFirestore db;
+    private SharedPrefManager prefManager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -38,6 +39,8 @@ public class BackupPinActivity extends AppCompatActivity {
         db = FirebaseFirestore.getInstance();
 
         btnSavePin.setOnClickListener(v -> saveBackupPin());
+
+        prefManager = new SharedPrefManager(this);
     }
 
     private void saveBackupPin() {
@@ -63,6 +66,9 @@ public class BackupPinActivity extends AppCompatActivity {
                 .document(userId)
                 .set(pinData, SetOptions.merge())
                 .addOnSuccessListener(unused -> {
+
+                    prefManager.setBackupPinSet(true);
+
                     Toast.makeText(this, "Backup PIN saved!", Toast.LENGTH_SHORT).show();
 
                     startActivity(new Intent(

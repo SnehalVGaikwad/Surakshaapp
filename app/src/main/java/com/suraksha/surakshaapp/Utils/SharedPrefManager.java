@@ -8,6 +8,7 @@ public class SharedPrefManager {
     private static final String KEY_REGISTRATION_COMPLETE = "registration_complete";
     private static final String KEY_PERMISSIONS_GRANTED = "permissions_granted";
     private static final String KEY_ALL_CONTACTS_ADDED = "all_contacts_added";
+    private static final String KEY_BACKUP_PIN_SET = "backup_pin_set";
     private static final String KEY_USER_NAME = "user_name";
     private static final String KEY_USER_PHONE = "user_phone";
     private static final String KEY_EMAIL_VERIFICATION_CODE = "email_verification_code";
@@ -43,6 +44,14 @@ public class SharedPrefManager {
 
     public boolean isAllContactsAdded() {
         return sharedPreferences.getBoolean(KEY_ALL_CONTACTS_ADDED, false);
+    }
+
+    public void setBackupPinSet(boolean value) {
+        editor.putBoolean(KEY_BACKUP_PIN_SET, value).apply();
+    }
+
+    public boolean isBackupPinSet() {
+        return sharedPreferences.getBoolean(KEY_BACKUP_PIN_SET, false);
     }
 
     public void setUserName(String name) {

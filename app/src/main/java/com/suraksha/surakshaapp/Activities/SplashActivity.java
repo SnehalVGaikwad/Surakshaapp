@@ -50,19 +50,24 @@ public class SplashActivity extends AppCompatActivity {
     }
 
     private void navigateNextScreen() {
-        // Check if user is already logged in and permissions granted
-        if (mAuth.getCurrentUser() != null && prefManager.isPermissionsGranted()) {
-            startActivity(new Intent(SplashActivity.this, HomeActivity.class));
-        } else if (mAuth.getCurrentUser() != null && !prefManager.isPermissionsGranted()) {
-            // User logged in but permissions not granted
-            startActivity(new Intent(SplashActivity.this, PermissionBlockedActivity.class));
-        } else if (prefManager.isRegistrationComplete()) {
-            // Registration complete, go to login
-            startActivity(new Intent(SplashActivity.this, LoginActivity.class));
+
+        if (!prefManager.isRegistrationComplete()) {
+
+            startActivity(new Intent(this, RegistrationActivity.class));
+
+        } else if (!prefManager.isAllContactsAdded()) {
+
+            startActivity(new Intent(this, EmergencyContactActivity.class));
+
+        } else if (!prefManager.isBackupPinSet()) {
+
+            startActivity(new Intent(this, BackupPinActivity.class));
+
         } else {
-            // New user, start registration flow
-            startActivity(new Intent(SplashActivity.this, RegistrationActivity.class));
+
+            startActivity(new Intent(this, HomeActivity.class));
         }
+
         finish();
     }
 }
