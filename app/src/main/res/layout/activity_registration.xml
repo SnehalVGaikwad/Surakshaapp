@@ -178,6 +178,18 @@
             android:background="@drawable/rounded_btn_bg"
             android:enabled="false" />
 
+        <TextView
+            android:id="@+id/tv_sign_in"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_marginTop="16dp"
+            android:text="Already have an account? Sign In"
+            android:textColor="@color/accent_pink_dark"
+            android:textStyle="bold"
+            android:clickable="true"
+            android:focusable="true"/>
+
     </LinearLayout>
 
 </ScrollView>

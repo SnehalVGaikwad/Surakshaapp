@@ -12,7 +12,7 @@ import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
-
+import com.suraksha.surakshaapp.Utils.WakeLockHelper;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.suraksha.surakshaapp.R;
@@ -36,7 +36,7 @@ public class HomeActivity extends AppCompatActivity {
     private CountDownTimer countDownTimer;
 
     // TEMP TEST MODE = 30 sec
-    private final long START_TIME = 300000;
+    private final long START_TIME = 30000;
 
     private String savedBackupPin = "";
 
@@ -170,18 +170,21 @@ public class HomeActivity extends AppCompatActivity {
             @Override
             public void onFinish() {
 
-                Intent intent = new Intent(
-                        HomeActivity.this,
-                        SafetyCheckActivity.class
-                );
+                WakeLockHelper.wakeScreen(HomeActivity.this);
 
-                intent.setFlags(
-                        Intent.FLAG_ACTIVITY_NEW_TASK |
-                                Intent.FLAG_ACTIVITY_CLEAR_TASK
-                );
+                new android.os.Handler().postDelayed(() -> {
 
-                startActivity(intent);
-                finish();
+                    Intent intent = new Intent(
+                            HomeActivity.this,
+                            SafetyCheckActivity.class
+                    );
+
+                    intent.addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
+
+                    startActivity(intent);
+                    finish();
+
+                }, 1000);
             }
         }.start();
     }

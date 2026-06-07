@@ -106,6 +106,16 @@
             android:textColor="@color/white"
             android:background="@drawable/rounded_btn_bg" />
 
+        <TextView
+            android:id="@+id/tv_register"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_marginTop="16dp"
+            android:text="Don't have an account? Sign Up"
+            android:textColor="@color/accent_pink_dark"
+            android:textStyle="bold"/>
+
     </LinearLayout>
 
 </ScrollView>

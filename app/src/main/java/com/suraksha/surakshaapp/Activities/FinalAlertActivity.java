@@ -32,10 +32,23 @@ public class FinalAlertActivity extends AppCompatActivity {
 
     private String savedBackupPin = "";
     private MediaPlayer mediaPlayer;
+    private boolean firstSOSSent = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O_MR1) {
+            setShowWhenLocked(true);
+            setTurnScreenOn(true);
+        }
+
+        getWindow().addFlags(
+                android.view.WindowManager.LayoutParams.FLAG_SHOW_WHEN_LOCKED
+                        | android.view.WindowManager.LayoutParams.FLAG_TURN_SCREEN_ON
+                        | android.view.WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON
+        );
+
         setContentView(R.layout.activity_final_alert);
 
         tvCountdown = findViewById(R.id.tv_final_countdown);
@@ -114,6 +127,7 @@ public class FinalAlertActivity extends AppCompatActivity {
 
             @Override
             public void onFinish() {
+
                 stopAlarm();
 
                 Toast.makeText(
@@ -123,7 +137,45 @@ public class FinalAlertActivity extends AppCompatActivity {
                 ).show();
 
                 triggerEmergencySOS();
+
+                firstSOSSent = true;
+
+                startTrackingCountdown();
             }
+        }.start();
+    }
+
+    private void startTrackingCountdown() {
+
+        timer = new CountDownTimer(60000, 1000) {
+
+            @Override
+            public void onTick(long millisUntilFinished) {
+
+                long seconds = millisUntilFinished / 1000;
+
+                long minutes = seconds / 60;
+                seconds = seconds % 60;
+
+                tvCountdown.setText(
+                        String.format("%02d:%02d",
+                                minutes,
+                                seconds)
+                );
+
+                tvWarning.setText(
+                        "Live tracking active"
+                );
+            }
+
+            @Override
+            public void onFinish() {
+
+                triggerEmergencySOS();
+
+                startTrackingCountdown();
+            }
+
         }.start();
     }
 

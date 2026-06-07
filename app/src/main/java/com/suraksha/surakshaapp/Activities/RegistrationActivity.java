@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.text.TextUtils;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AlertDialog;
@@ -30,6 +31,8 @@ public class RegistrationActivity extends AppCompatActivity {
     private FirebaseAuthManager authManager;
     private SharedPrefManager prefManager;
 
+    private TextView tvSignIn;
+
     private boolean phoneVerified = false;
 
     @Override
@@ -38,6 +41,12 @@ public class RegistrationActivity extends AppCompatActivity {
         setContentView(R.layout.activity_registration);
 
         initializeViews();
+
+        tvSignIn.setOnClickListener(v -> {
+            startActivity(new Intent(RegistrationActivity.this, LoginActivity.class));
+            finish();
+        });
+
         mAuth = FirebaseAuth.getInstance();
         db = FirebaseFirestore.getInstance();
         authManager = new FirebaseAuthManager(this);
@@ -56,6 +65,7 @@ public class RegistrationActivity extends AppCompatActivity {
         tilPassword = findViewById(R.id.til_password);
         btnVerifyOTP = findViewById(R.id.btn_verify_otp);
         btnRegister = findViewById(R.id.btn_register);
+        tvSignIn = findViewById(R.id.tv_sign_in);
     }
 
     private void setupListeners() {

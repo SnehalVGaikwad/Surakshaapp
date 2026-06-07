@@ -10,6 +10,7 @@ import android.widget.TextView;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.suraksha.surakshaapp.R;
+import com.suraksha.surakshaapp.Utils.WakeLockHelper;
 
 public class SafetyCheckActivity extends AppCompatActivity {
 
@@ -22,6 +23,29 @@ public class SafetyCheckActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O_MR1) {
+            setShowWhenLocked(true);
+            setTurnScreenOn(true);
+        }
+
+        android.app.KeyguardManager km =
+                (android.app.KeyguardManager)
+                        getSystemService(KEYGUARD_SERVICE);
+
+        if (km != null &&
+                android.os.Build.VERSION.SDK_INT
+                        >= android.os.Build.VERSION_CODES.O) {
+
+            km.requestDismissKeyguard(this, null);
+        }
+
+        getWindow().addFlags(
+                android.view.WindowManager.LayoutParams.FLAG_SHOW_WHEN_LOCKED
+                        | android.view.WindowManager.LayoutParams.FLAG_TURN_SCREEN_ON
+                        | android.view.WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON
+        );
+
         setContentView(R.layout.activity_safety_check);
 
         tvCountdown = findViewById(R.id.tv_countdown);
@@ -91,6 +115,8 @@ public class SafetyCheckActivity extends AppCompatActivity {
             @Override
             public void onFinish() {
                 stopAlarm();
+
+                WakeLockHelper.wakeScreen(SafetyCheckActivity.this);
 
                 Intent intent = new Intent(
                         SafetyCheckActivity.this,

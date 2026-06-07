@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.text.TextUtils;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -25,6 +26,8 @@ public class LoginActivity extends AppCompatActivity {
     private PermissionManager permissionManager;
     private SharedPrefManager prefManager;
 
+    private TextView tvRegister;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -37,12 +40,18 @@ public class LoginActivity extends AppCompatActivity {
         prefManager = new SharedPrefManager(this);
 
         btnLogin.setOnClickListener(v -> handleLogin());
+
+        tvRegister.setOnClickListener(v -> {
+            startActivity(new Intent(LoginActivity.this, RegistrationActivity.class));
+            finish();
+        });
     }
 
     private void initializeViews() {
         etEmail = findViewById(R.id.et_login_email);
         etPassword = findViewById(R.id.et_login_password);
         btnLogin = findViewById(R.id.btn_login);
+        tvRegister = findViewById(R.id.tv_register);
     }
 
     private void handleLogin() {
@@ -61,20 +70,21 @@ public class LoginActivity extends AppCompatActivity {
                 .addOnCompleteListener(task -> {
                     if (task.isSuccessful()) {
                         FirebaseUser user = mAuth.getCurrentUser();
-                        if (user != null && user.isEmailVerified()) {
-                            Toast.makeText(LoginActivity.this, "Login successful!", Toast.LENGTH_SHORT).show();
 
-                            // Check if permissions are granted
+                        if (user != null) {
+                            Toast.makeText(LoginActivity.this, "Welcome back!", Toast.LENGTH_SHORT).show();
+
                             if (permissionManager.areAllPermissionsGranted()) {
                                 prefManager.setPermissionsGranted(true);
                                 startActivity(new Intent(LoginActivity.this, HomeActivity.class));
                             } else {
                                 startActivity(new Intent(LoginActivity.this, PermissionBlockedActivity.class));
                             }
+
                             finish();
                         } else {
-                            Toast.makeText(LoginActivity.this, "Email not verified. Check your inbox.", Toast.LENGTH_SHORT).show();
                             btnLogin.setEnabled(true);
+                            Toast.makeText(LoginActivity.this, "Login failed", Toast.LENGTH_SHORT).show();
                         }
                     } else {
                         Toast.makeText(LoginActivity.this,
