@@ -7,7 +7,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
-
+import com.google.firebase.firestore.FirebaseFirestore;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.google.firebase.auth.FirebaseAuth;
@@ -25,6 +25,7 @@ public class LoginActivity extends AppCompatActivity {
     private FirebaseAuthManager authManager;
     private PermissionManager permissionManager;
     private SharedPrefManager prefManager;
+    private FirebaseFirestore db;
 
     private TextView tvRegister;
 
@@ -32,6 +33,8 @@ public class LoginActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
+
+        db = FirebaseFirestore.getInstance();
 
         initializeViews();
         mAuth = FirebaseAuth.getInstance();
@@ -72,19 +75,23 @@ public class LoginActivity extends AppCompatActivity {
                         FirebaseUser user = mAuth.getCurrentUser();
 
                         if (user != null) {
-                            Toast.makeText(LoginActivity.this, "Welcome back!", Toast.LENGTH_SHORT).show();
 
-                            if (permissionManager.areAllPermissionsGranted()) {
-                                prefManager.setPermissionsGranted(true);
-                                startActivity(new Intent(LoginActivity.this, HomeActivity.class));
-                            } else {
-                                startActivity(new Intent(LoginActivity.this, PermissionBlockedActivity.class));
-                            }
+                            Toast.makeText(
+                                    LoginActivity.this,
+                                    "Welcome back!",
+                                    Toast.LENGTH_SHORT
+                            ).show();
 
-                            finish();
+                            restoreUserStateAndProceed(user);
+
                         } else {
+
                             btnLogin.setEnabled(true);
-                            Toast.makeText(LoginActivity.this, "Login failed", Toast.LENGTH_SHORT).show();
+                            Toast.makeText(
+                                    LoginActivity.this,
+                                    "Login failed",
+                                    Toast.LENGTH_SHORT
+                            ).show();
                         }
                     } else {
                         Toast.makeText(LoginActivity.this,
@@ -93,5 +100,55 @@ public class LoginActivity extends AppCompatActivity {
                         btnLogin.setEnabled(true);
                     }
                 });
+    }
+    private void restoreUserStateAndProceed(FirebaseUser user) {
+
+        String uid = user.getUid();
+
+        db.collection("users")
+                .document(uid)
+                .get()
+                .addOnSuccessListener(document -> {
+
+                    prefManager.setRegistrationComplete(true);
+
+                    if (document.contains("backup_pin")) {
+                        prefManager.setBackupPinSet(true);
+                    }
+
+                    db.collection("users")
+                            .document(uid)
+                            .collection("trusted_contacts")
+                            .get()
+                            .addOnSuccessListener(querySnapshot -> {
+
+                                if (!querySnapshot.isEmpty()) {
+                                    prefManager.setAllContactsAdded(true);
+                                }
+
+                                proceedToNextScreen();
+                            });
+                });
+    }
+    private void proceedToNextScreen() {
+
+        if (permissionManager.areAllPermissionsGranted()) {
+
+            prefManager.setPermissionsGranted(true);
+
+            startActivity(
+                    new Intent(LoginActivity.this,
+                            HomeActivity.class)
+            );
+
+        } else {
+
+            startActivity(
+                    new Intent(LoginActivity.this,
+                            PermissionBlockedActivity.class)
+            );
+        }
+
+        finish();
     }
 }
